@@ -16,70 +16,88 @@ const k = kaboom({
 
 k.loadSprite("bean", "sprites/bean.png")
 
-const player = k.add([
-	k.pos(240, 600),
-	k.sprite("bean"),
-	k.area(),
-	{ speed: 300 }
-])
-
-k.onKeyDown("a", () => {
-	player.move(-player.speed, 0)
-})
-
-k.onKeyDown("d", () => {
-	player.move(player.speed, 0)
-})
-
-// add obstacle
-function spawnObstacle() {
-	k.add([
-		k.rect(20, 20),
-		k.pos(rand(10, 470), -20),
+k.scene("levelOne", () => {
+	const player = k.add([
+		k.pos(240, 600),
+		k.sprite("bean"),
 		k.area(),
-		k.outline(4),
-		k.color(255, 180, 255),
-		k.move(DOWN, player.speed),
-		"obstacle",
+		{ speed: 400 }
 	])
 
-	// wait a random amount of time to spawn next tree
-	wait(rand(0.5, 1.5), spawnObstacle);
-}
+	k.onKeyDown("a", () => {
+		player.move(-player.speed, 0)
+	})
 
-function spawnReward() {
-	k.add([
-		k.rect(20, 20),
-		k.pos(rand(10, 470), -20),
-		k.area(),
-		k.outline(4),
-		k.color(20, 150, 15),
-		k.move(DOWN, player.speed),
-		"reward",
+	k.onKeyDown("d", () => {
+		player.move(player.speed, 0)
+	})
+
+	// add obstacle
+	function spawnObstacle() {
+		k.add([
+			k.rect(20, 20),
+			k.pos(rand(10, 470), -20),
+			k.area(),
+			k.outline(4),
+			k.color(255, 180, 255),
+			k.move(DOWN, player.speed),
+			"obstacle",
+		])
+
+		// wait a random amount of time to spawn next tree
+		wait(rand(0.5, 1.5), spawnObstacle);
+	}
+
+	function spawnReward() {
+		k.add([
+			k.rect(20, 20),
+			k.pos(rand(10, 470), -20),
+			k.area(),
+			k.outline(4),
+			k.color(20, 150, 15),
+			k.move(DOWN, player.speed),
+			"reward",
+		])
+
+		// wait a random amount of time to spawn next tree
+		wait(rand(2.5, 3.5), spawnReward);
+	}
+
+	spawnObstacle();
+	spawnReward();
+
+	player.onCollide("obstacle", () => {
+		k.addKaboom(player.pos);
+		k.shake();
+		go("lose");
+	});
+
+	player.onCollide("reward", (reward) => {
+		score += 10;
+		k.destroy(reward)
+	});
+
+	const scoreLabel = add([
+		k.text(score),
+		k.pos(24, 24),
+	]);
+
+	onUpdate(() => {
+		scoreLabel.text = score;
+	});
+
+});
+
+k.go("levelOne");
+
+scene("lose", () => {
+	add([
+		text("Game Over"),
+		pos(center()),
+		anchor("center"),
+		score = 0,
 	])
 
-	// wait a random amount of time to spawn next tree
-	wait(rand(2.5, 3.5), spawnReward);
-}
-
-spawnObstacle();
-spawnReward();
-
-player.onCollide("obstacle", () => {
-	k.addKaboom(player.pos);
-	k.shake();
-});
-
-player.onCollide("reward", () => {
-	score += 10;
-	k.shake();
-});
-
-const scoreLabel = add([
-	k.text(score),
-	k.pos(24, 24),
-]);
-
-onUpdate(() => {
-	scoreLabel.text = score;
-});
+	onKeyPress("space", () => go("levelOne"));
+	onClick(() => go("levelOne"));
+})
