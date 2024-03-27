@@ -1,4 +1,5 @@
-import kaboom from "kaboom"
+import kaboom from "kaboom";
+import { createPlayer } from "./player";
 
 // keep track of score
 let score = 0;
@@ -17,20 +18,16 @@ const k = kaboom({
 k.loadSprite("bean", "sprites/bean.png")
 
 k.scene("levelOne", () => {
-	const player = k.add([
-		k.pos(240, 600),
-		k.sprite("bean"),
-		k.area(),
-		{ speed: 400 }
-	])
+
+	const player = createPlayer();
 
 	k.onKeyDown("a", () => {
 		player.move(-player.speed, 0)
-	})
+	}),
 
-	k.onKeyDown("d", () => {
-		player.move(player.speed, 0)
-	})
+		k.onKeyDown("d", () => {
+			player.move(player.speed, 0)
+		})
 
 	// add obstacle
 	function spawnObstacle() {
@@ -44,7 +41,7 @@ k.scene("levelOne", () => {
 			"obstacle",
 		])
 
-		// wait a random amount of time to spawn next tree
+		// wait a random amount of time to spawn next obstacle
 		wait(rand(0.5, 1.5), spawnObstacle);
 	}
 
@@ -59,7 +56,7 @@ k.scene("levelOne", () => {
 			"reward",
 		])
 
-		// wait a random amount of time to spawn next tree
+		// wait a random amount of time to spawn next reward
 		wait(rand(2.5, 3.5), spawnReward);
 	}
 
@@ -77,6 +74,10 @@ k.scene("levelOne", () => {
 		k.destroy(reward)
 	});
 
+	player.onCollide("wall", () => {
+		player.stop()
+	})
+
 	const scoreLabel = add([
 		k.text(score),
 		k.pos(24, 24),
@@ -85,6 +86,16 @@ k.scene("levelOne", () => {
 	onUpdate(() => {
 		scoreLabel.text = score;
 	});
+
+	k.add([
+		k.rect(10, 720),
+		k.pos(-11, 0),
+		k.area(),
+		k.body(),
+		k.outline(4),
+		k.color(0, 0, 0),
+		"wall,"
+	])
 
 });
 
