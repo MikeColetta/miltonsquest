@@ -74,10 +74,6 @@ k.scene("levelOne", () => {
 		k.destroy(reward)
 	});
 
-	player.onCollide("wall", () => {
-		player.stop()
-	})
-
 	const scoreLabel = add([
 		k.text(score),
 		k.pos(24, 24),
@@ -87,14 +83,20 @@ k.scene("levelOne", () => {
 		scoreLabel.text = score;
 	});
 
-	k.add([
+	const leftWall = k.add([
 		k.rect(10, 720),
-		k.pos(-11, 0),
+		k.pos(-12, 0),
 		k.area(),
-		k.body(),
-		k.outline(4),
-		k.color(0, 0, 0),
-		"wall,"
+		k.body({ isStatic: true }),
+		"wall,",
+	])
+
+	const rightWall = k.add([
+		k.rect(10, 720),
+		k.pos(482, 0),
+		k.area(),
+		k.body({ isStatic: true }),
+		"wall,",
 	])
 
 });
@@ -112,3 +114,8 @@ scene("lose", () => {
 	onKeyPress("space", () => go("levelOne"));
 	onClick(() => go("levelOne"));
 })
+
+if (player.pos(0))
+	k.onKeyDown("a", () => {
+		player.move(0, 0)
+	})
