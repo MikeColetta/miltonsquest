@@ -32,17 +32,17 @@ k.scene("levelOne", () => {
 	// add obstacle
 	function spawnObstacle() {
 		k.add([
-			k.rect(20, 20),
+			k.rect(rand(30, 100), rand(30, 100)),
 			k.pos(rand(10, 470), -20),
 			k.area(),
 			k.outline(4),
 			k.color(255, 180, 255),
-			k.move(DOWN, player.speed),
+			k.move(DOWN, 500),
 			"obstacle",
 		])
 
 		// wait a random amount of time to spawn next obstacle
-		wait(rand(0.5, 1.5), spawnObstacle);
+		wait(rand(0.5, 1.0), spawnObstacle);
 	}
 
 	function spawnReward() {
@@ -57,7 +57,7 @@ k.scene("levelOne", () => {
 		])
 
 		// wait a random amount of time to spawn next reward
-		wait(rand(2.5, 3.5), spawnReward);
+		wait(rand(1.5, 2.5), spawnReward);
 	}
 
 	spawnObstacle();
